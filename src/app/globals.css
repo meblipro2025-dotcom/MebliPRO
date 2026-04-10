@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold-100: #FBF5B7;
+  --color-gold-200: #FDE88C;
+  --color-gold-300: #E6C061;
+  --color-gold-400: #BF953F;
+  --color-gold-500: #AA771C;
+  --color-gold-600: #8C6211;
+  
+  --color-dark-bg: #030303;
+  --color-dark-surface: #0f0f0f;
+  --color-dark-elevated: #161616;
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-playfair), Georgia, serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-dark-bg);
+    color: #e5e5e5;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    background-image: 
+      repeating-linear-gradient(45deg, transparent, transparent 80px, rgba(212,175,55,0.03) 80px, rgba(212,175,55,0.03) 81px),
+      repeating-linear-gradient(-45deg, transparent, transparent 80px, rgba(212,175,55,0.02) 80px, rgba(212,175,55,0.02) 81px),
+      radial-gradient(circle at 50% 0%, #161616 0%, #030303 80%);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .text-metallic-gold {
+    background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-metallic-gold {
+    background: linear-gradient(135deg, #AA771C 0%, #FBF5B7 40%, #BF953F 80%);
+    color: #000;
+  }
+
+  .glass-luxury {
+    background: rgba(15, 15, 15, 0.4);
+    backdrop-filter: blur(24px) saturate(120%);
+    border: 1px solid rgba(191, 149, 63, 0.15);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(251, 245, 183, 0.05);
+  }
+
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .border-gold-glow {
+    border: 1px solid rgba(191, 149, 63, 0.3);
+    box-shadow: 0 0 15px rgba(170, 119, 28, 0.2);
+  }
+
+  .gold-underline {
+    position: relative;
+  }
+  .gold-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(to right, #D4AF37, transparent);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-dark-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-gold-500);
+  border-radius: 4px;
+}
+
+/* Smooth section transitions */
+section {
+  position: relative;
+}
+
+/* Blog article styling */
+.prose-gold h3 {
+  color: #D4AF37;
+  font-family: var(--font-heading);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* CRITICAL MOBILE FIXES - Force content visibility on real devices */
+@media (max-width: 1024px) {
+  /* Ensure all sections are visible */
+  section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* Force all motion divs to be visible */
+  div[style*="opacity: 0"] {
+    opacity: 1 !important;
+  }
+  
+  /* Ensure buttons are clickable */
+  button, a, [role="button"] {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    cursor: pointer !important;
+  }
+  
+  /* Fix glass effects that might block interactions */
+  .glass-luxury, .glass-dark {
+    pointer-events: auto !important;
+  }
+  
+  /* Ensure images are visible */
+  img {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
+/* Touch event fixes for mobile */
+@media (pointer: coarse) {
+  button, a, [role="button"], .cursor-pointer {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Prevent text selection on buttons (improves touch response) */
+button, a {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(212, 175, 55, 0.3);
+}

@@ -1,0 +1,75 @@
+# ═══════════════════════════════════════════════════════════════
+# MEBLI-PRO — Cascade Agent Master Rules
+# ═══════════════════════════════════════════════════════════════
+
+## 1. PROJECT IDENTITY
+Premium Ukrainian furniture business platform. Owner: Oleksandr, Kyiv (Left Bank).
+Stack: Next.js 14+ App Router · TypeScript (strict) · Tailwind CSS · Supabase (PostgreSQL + Storage) · Framer Motion · Lucide React · Jose JWT · Puppeteer.
+Colors: #141414 (dark bg), #D4AF37 (gold accent), #ffffff (text).
+Fonts: Playfair Display (headings, class: font-heading), Inter (body).
+
+## 2. ARCHITECTURE RULES (NON-NEGOTIABLE)
+- All business logic lives in /src/lib. All UI components in /src/components.
+- Server-side DB access: use Supabase anon key (NEXT_PUBLIC_SUPABASE_ANON_KEY) from /src/lib/supabase.ts.
+- Admin API routes (/api/admin/*) are protected by Edge Middleware JWT check in /src/middleware.ts.
+- Site settings are stored in Supabase table `site_settings` as key-value JSONB pairs. Key 'site' holds siteSettings object, key 'banner' holds banner config.
+- The SiteContext (/src/context/SiteContext.tsx) is populated server-side in layout.tsx and provides static SSR data to components. For live data, components must fetch directly from Supabase client-side.
+- NEVER use 'any' TypeScript type. Define proper interfaces.
+- NEVER hardcode secrets. All keys must be in .env.local (see .env.example).
+
+## 3. DATABASE (SUPABASE) — CRITICAL FACTS
+- ALWAYS use supabase_master.sql (root of project) as the SINGLE SOURCE OF TRUTH for schema + RLS policies.
+- RLS is PERMISSIVE: all tables allow full public access (SELECT/INSERT/UPDATE/DELETE USING true). This is intentional — admin protection is handled by Next.js JWT middleware, not DB-level auth.
+- Tables: site_settings, gallery, blog, reviews, leads, site_events, categories.
+- site_settings key names: 'site' (main settings), 'banner' (banner config). NEVER use 'siteSettings' key.
+- gallery table uses TEXT[] for image_urls (array), NOT a single image_url column.
+- site_events table columns: event_type, path, referrer, source. NO 'detail' column.
+- Storage bucket name: 'site-media' (public). Set in NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET.
+- If DB operations fail silently, first suspect RLS policies blocking the anon key. Run supabase_master.sql to reset.
+
+## 4. KNOWN BUGS STATUS
+- [x] THREE.Clock deprecation in Hero3D.tsx — FIXED (console.warn suppressed at module level)
+- [x] /api/analytics 500 error — FIXED (removed non-existent 'detail' field, graceful 200 on error)
+- [x] Ghost demo articles in Blog.tsx — FIXED (defaultBlogPosts fallback removed; DB is source of truth)
+- [x] Ghost demo gallery in Gallery.tsx — FIXED (galleryFallback removed; DB is source of truth)
+- [x] Admin delete silently fails — FIXED (error toast added to all delete/CRUD operations)
+- [x] Settings/Banner not persisting — FIXED (/api/admin/settings now checks for errors + correct SQL)
+- [ ] Telegram Bot 2.0 (catalog + calculator) — PENDING
+- [ ] Calculator redesign — PENDING
+- [ ] Full mobile responsive audit — PENDING
+
+## 5. ADMIN PANEL RULES
+- Admin route: /admin (protected by JWT cookie 'admin_token')
+- Login route: /admin/login
+- All admin DB writes go through: direct Supabase client calls from the admin client component (authorized via JWT middleware protecting /admin/*)
+- Error handling: EVERY Supabase operation must check for error and call showToast(error.message, 'error') on failure.
+- Settings save flow: Admin → saveSettings({banner, site}) → POST /api/admin/settings → supabase.upsert({key:'site', value: siteSettings}) + supabase.upsert({key:'banner', value: banner}) → revalidatePath('/').
+- Banner display: PromoBanner component reads from useSiteSettings() context (SSR-loaded). Banner changes appear after page refresh (not real-time in admin preview).
+
+## 6. LEAD PIPELINE RULES
+- Flow: DB insert (leads table) → Puppeteer PDF → Telegram notification → Email copy.
+- Fallback: If PDF fails, Telegram must still fire. If Email fails, lead must still be in DB.
+- PDF: uses Puppeteer (server-side HTML template). Cyrillic supported via HTML/CSS (no jsPDF).
+- Telegram: send via BOT_TOKEN + ADMIN_CHAT_ID env vars. Bot token format: 123456:ABCdef...
+- Email: SMTP via env vars (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, ADMIN_EMAIL).
+
+## 7. CODE QUALITY RULES
+- TypeScript strict mode. No 'any'. No implicit type assertions without justification.
+- No dead/commented code. No console.log in production paths (use console.error/warn for real errors only).
+- Tailwind CSS only — no inline styles except for dynamic values. No CSS modules.
+- Framer Motion for all animations. Use whileInView with viewport={{ once: true }} for scroll animations.
+- Images: always use next/image with proper fill + sizes props. Never use raw <img> for product/portfolio images.
+- Before reporting a bug fixed, verify by re-reading the changed file and tracing the data flow mentally.
+
+## 8. BEFORE EVERY MAJOR TASK
+1. Read this file fully.
+2. Run: grep-search on relevant files to understand current state.
+3. Identify root cause (not symptom) before writing code.
+4. Make minimal, targeted changes.
+5. After changes: run `npm run build` to verify zero TypeScript errors.
+
+## 9. TELEGRAM BOT (FUTURE)
+- Bot file location: /src/app/api/bot/route.ts (webhook handler)
+- Bot should mirror: gallery browsing, calculator, lead submission.
+- Telegram Web App URL for calculator: {NEXT_PUBLIC_SITE_URL}/tg-app (to be created)
+- Bot state machine: simple command-based with inline keyboards. No external bot framework needed.

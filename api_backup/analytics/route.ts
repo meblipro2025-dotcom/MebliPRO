@@ -1,0 +1,32 @@
+import { NextResponse } from "next/server";
+import { supabase } from "@/lib/supabase";
+
+interface AnalyticsEvent {
+  event_type: string;
+  path?: string;
+  referrer?: string;
+  source?: string;
+}
+
+export async function POST(req: Request) {
+  try {
+    const body = (await req.json()) as AnalyticsEvent;
+    const { event_type, path, referrer, source } = body;
+
+    const { error } = await supabase.from('site_events').insert([{ event_type, path, referrer, source }]);
+    if (error) {
+      console.error('Analytics insert error:', error.message);
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Analytics API error:', err);
+    return NextResponse.json({ success: true });
+  }
+}
+
+export async function GET() {
+  const { data, error } = await supabase.from('site_events').select('*').order('created_at', { ascending: false }).limit(200);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json(data);
+}
