@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MoveRight, MapPin, Phone } from "lucide-react";
+import { MoveRight, MapPin, Phone, Check } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
@@ -14,6 +14,8 @@ import Configurator from "@/components/Configurator";
 import FAQ from "@/components/FAQ";
 import Reviews from "@/components/Reviews";
 import Footer from "@/components/Footer";
+import WhyUs from "@/components/WhyUs";
+import Guarantees from "@/components/Guarantees";
 import Hero3D from "@/components/Hero3D";
 import MobileContactBar from "@/components/MobileContactBar";
 import PromoBanner from "@/components/PromoBanner";
@@ -67,18 +69,32 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="relative z-30"
             >
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center gap-4 mb-4">
                 <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4AF37]" />
-                <span className="text-xs uppercase tracking-[0.3em] text-[#D4AF37] font-medium">Ексклюзивне Виробництво • Київ</span>
+                <span className="text-xs uppercase tracking-[0.3em] text-[#D4AF37] font-medium">Власне виробництво • Київ • 15+ років</span>
               </div>
               
               <div className="bg-black/50 sm:bg-transparent p-4 sm:p-0 -mx-4 sm:mx-0 rounded-lg sm:rounded-none backdrop-blur-sm sm:backdrop-blur-none">
-                <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-heading mb-4 sm:mb-6 md:mb-8 leading-[1.1] sm:leading-[1.05] drop-shadow-lg text-white">
-                  {settings.hero_title || "Меблі Преміум-Класу"}
+                <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-heading mb-4 sm:mb-6 leading-[1.15] sm:leading-[1.1] drop-shadow-lg text-white">
+                  Кухні та меблі на замовлення в Києві під ключ
                 </h1>
                 
-                <p className="text-base sm:text-lg md:text-xl text-zinc-100 max-w-2xl mb-6 sm:mb-10 md:mb-12 font-light leading-relaxed border-l-2 border-[#D4AF37]/50 pl-4 sm:pl-6 drop-shadow-md">
-                  {settings.hero_subtitle || "Кухні, шафи та гардеробні за індивідуальним проектом на Лівому березі Києва"}
+                {/* USP Points */}
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mb-6">
+                  {[
+                    "Від 21 дня",
+                    "Гарантія 2 роки",
+                    "Безкоштовний дизайн"
+                  ].map((usp, i) => (
+                    <div key={i} className="flex items-center gap-2 text-zinc-200">
+                      <Check className="w-4 h-4 text-[#D4AF37]" />
+                      <span className="text-sm font-medium">{usp}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <p className="text-base sm:text-lg text-zinc-100 max-w-2xl mb-6 sm:mb-8 font-light leading-relaxed border-l-2 border-[#D4AF37]/50 pl-4 sm:pl-6 drop-shadow-md">
+                  Отримайте розрахунок вартості за 5 хвилин. Працюємо на Троєщині, Лісовому, Дарниці, Воскресенці, Биківні.
                 </p>
               </div>
 
@@ -87,7 +103,7 @@ export default function Home() {
                   onClick={(e) => { e.preventDefault(); document.getElementById('order')?.scrollIntoView({ behavior: 'smooth' }); }}
                   className="group relative flex items-center justify-center gap-3 w-full sm:w-auto h-14 sm:h-16 px-8 sm:px-10 bg-metallic-gold text-black uppercase tracking-widest text-xs font-bold rounded-none overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(191,149,63,0.3)] cursor-pointer"
                 >
-                  <span className="relative z-10">Зробити прорахунок</span>
+                  <span className="relative z-10">Розрахувати вартість</span>
                   <MoveRight className="w-4 h-4 group-hover:translate-x-2 transition-transform relative z-10" />
                   <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                 </button>
@@ -137,10 +153,12 @@ export default function Home() {
 
       {/* Page Sections */}
       <div className="relative z-20 bg-[var(--color-dark-bg)]">
+        <WhyUs />
         <Services />
         <Gallery />
         <About />
         <Timeline />
+        <Guarantees />
         <FAQ />
         <Reviews />
         <Configurator />

@@ -103,18 +103,20 @@ export default function Gallery() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0 }}
-                className="group relative h-[350px] md:h-[450px] overflow-hidden bg-[#0a0a0a] border border-white/10 cursor-pointer"
+                className="group relative h-[300px] sm:h-[350px] md:h-[450px] overflow-hidden bg-[#0a0a0a] border border-white/10 cursor-pointer"
                 onClick={() => setLightboxImage(project.image)}
               >
-                <Image 
-                  src={project.image}
-                  alt={`${project.title} — ${categories.find(c => c.id === project.category)?.name || 'Меблі'} на замовлення в Києві, Лівий берег`}
-                  fill
-                  className="object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
+                <div className="absolute inset-0">
+                  <Image 
+                    src={project.image}
+                    alt={`${project.title} — ${categories.find(c => c.id === project.category)?.name || 'Меблі'} на замовлення в Києві, Лівий берег`}
+                    fill
+                    className="object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                </div>
                 
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 group-hover:opacity-80 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 group-hover:opacity-80 transition-opacity pointer-events-none" />
 
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                   <div className="flex justify-between items-end">
@@ -131,7 +133,7 @@ export default function Gallery() {
                   </div>
                 </div>
                 
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#D4AF37]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 mix-blend-screen pointer-events-none" />
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#D4AF37]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 mix-blend-screen pointer-events-none z-10" />
               </motion.div>
             ))}
           </AnimatePresence>
