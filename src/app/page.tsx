@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Services from "@/components/Services";
-import Gallery from "@/components/Gallery";
+import Cases from "@/components/Cases";
 import About from "@/components/About";
 import Timeline from "@/components/Timeline";
 import Blog from "@/components/Blog";
@@ -155,7 +155,7 @@ export default function Home() {
       <div className="relative z-20 bg-[var(--color-dark-bg)]">
         <WhyUs />
         <Services />
-        <Gallery />
+        <Cases />
         <About />
         <Timeline />
         <Guarantees />

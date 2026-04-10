@@ -23,7 +23,13 @@ CREATE TABLE IF NOT EXISTS gallery (
   materials   TEXT,
   image_urls  TEXT[],
   is_featured BOOLEAN DEFAULT false,
-  created_at  TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()) NOT NULL
+  created_at  TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()) NOT NULL,
+  -- Case study fields
+  budget      TEXT,
+  area_sqm    NUMERIC,
+  task        TEXT,
+  solution    TEXT,
+  before_images TEXT[]
 );
 
 CREATE TABLE IF NOT EXISTS reviews (
@@ -148,6 +154,11 @@ ALTER TABLE gallery ADD COLUMN IF NOT EXISTS category    TEXT;
 ALTER TABLE gallery ADD COLUMN IF NOT EXISTS image_urls  TEXT[];
 ALTER TABLE gallery ADD COLUMN IF NOT EXISTS materials   TEXT;
 ALTER TABLE gallery ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false;
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS budget      TEXT;
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS area_sqm    NUMERIC;
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS task        TEXT;
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS solution    TEXT;
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS before_images TEXT[];
 
 ALTER TABLE blog ADD COLUMN IF NOT EXISTS slug         TEXT;
 ALTER TABLE blog ADD COLUMN IF NOT EXISTS excerpt      TEXT;
