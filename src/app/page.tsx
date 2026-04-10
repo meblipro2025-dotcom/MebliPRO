@@ -42,7 +42,7 @@ export default function Home() {
       <Navbar />
 
       {/* Cinematic Hero Section */}
-      <section className="relative z-10 min-h-[100vh] sm:min-h-screen w-full flex items-center justify-center overflow-hidden">
+      <section className="relative z-10 min-h-[100dvh] md:min-h-screen w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 w-full h-full z-0">
           <Image 
             src="/images/luxury_kitchen.png" 
@@ -114,7 +114,7 @@ export default function Home() {
           transition={{ duration: 1, delay: 0.5 }}
           className="hidden xl:block absolute right-20 bottom-32 z-20 glass-luxury p-8 max-w-xs border-l-4 border-l-[#D4AF37]"
         >
-          <div className="text-4xl text-metallic-gold font-heading mb-2">5+</div>
+          <div className="text-4xl text-metallic-gold font-heading mb-2">15+</div>
           <div className="text-xs uppercase tracking-widest text-zinc-400 mb-6">Років Досвіду</div>
           <p className="text-sm font-light text-zinc-300 leading-relaxed">
             Сотні реалізованих проектів. Тільки перевірені бренди: Egger, Cleaf, Blum. Лівий берег Києва.
