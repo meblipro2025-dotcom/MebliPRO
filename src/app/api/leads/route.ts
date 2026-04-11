@@ -142,7 +142,7 @@ export async function POST(req: Request) {
         if (pdfBuffer) {
           const pdfData = new FormData();
           pdfData.append("chat_id", chatId);
-          pdfData.append("document", new Blob([pdfBuffer], { type: "application/pdf" }), pdfFilename);
+          pdfData.append("document", new Blob([new Uint8Array(pdfBuffer)], { type: "application/pdf" }), pdfFilename);
           await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, { method: "POST", body: pdfData });
         }
 

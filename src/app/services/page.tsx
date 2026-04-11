@@ -1,6 +1,6 @@
-export const dynamic = 'force-dynamic';
-
 "use client";
+
+export const dynamic = 'force-dynamic';
 
 import { motion } from "framer-motion";
 import { MoveRight, Home, Layout, Sofa, Monitor, Box, Brush, ChefHat, BedDouble, Table2, Baby, HelpCircle } from "lucide-react";

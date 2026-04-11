@@ -93,8 +93,13 @@ export default function Services() {
     },
   ];
   
-  const services = settings.services.length > 0 
-    ? settings.services.map((s: Service) => ({ ...s, slug: s.slug || s.title.toLowerCase().replace(/\s+/g, '-') }))
+  const services: Service[] = settings.services.length > 0 
+    ? settings.services.map((s, idx) => ({ 
+        ...s, 
+        id: s.id || String(idx + 1),
+        slug: s.slug || s.title.toLowerCase().replace(/\s+/g, '-'),
+        category: s.category || 'other'
+      })) as Service[]
     : defaultServices;
 
   return (

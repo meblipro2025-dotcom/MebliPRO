@@ -3,9 +3,12 @@
 import React, { createContext, useContext, ReactNode } from "react";
 
 export interface ServiceItem {
+  id?: string;
   title: string;
   desc: string;
   bg: string;
+  slug?: string;
+  category?: string;
 }
 
 export interface FaqItem {
