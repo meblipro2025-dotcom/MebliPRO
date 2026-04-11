@@ -240,5 +240,89 @@ CREATE POLICY "public_delete_site_media"
   ON storage.objects FOR DELETE USING (bucket_id = 'site-media');
 
 -- ═══════════════════════════════════════════════════════════════
+-- НОВІ ТАБЛИЦІ ТА ОНОВЛЕННЯ (Масштабне оновлення 2025)
+-- ═══════════════════════════════════════════════════════════════
+
+-- ─── ТАБЛИЦЯ PROJECTS (Каталог об'єктів) ─────────────────────
+CREATE TABLE IF NOT EXISTS projects (
+  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title             TEXT NOT NULL,
+  description       TEXT,
+  category          TEXT NOT NULL, -- 'Кухні', 'Шафи', 'Комоди', 'Реставрація', 'Трансформери', 'Дитячі'
+  image_urls        TEXT[] DEFAULT '{}',
+  before_images     TEXT[] DEFAULT '{}',
+  
+  -- Характеристики залежно від категорії (JSONB)
+  specifications    JSONB DEFAULT '{}',
+  
+  -- Цінова інформація
+  price_from        NUMERIC,
+  price_to          NUMERIC,
+  price_exact       NUMERIC,
+  price_note        TEXT, -- "Орієнтовна вартість"
+  
+  -- Матеріали та фурнітура
+  materials         TEXT[],
+  furniture_brand   TEXT, -- 'Blum', 'Hettich', 'Muller', 'Бюджет', 'Середній', 'Преміум'
+  
+  -- SEO поля
+  meta_title        TEXT,
+  meta_description  TEXT,
+  slug              TEXT UNIQUE,
+  
+  -- Статус та видимість
+  is_published      BOOLEAN DEFAULT false,
+  is_featured       BOOLEAN DEFAULT false,
+  sort_order        INTEGER DEFAULT 0,
+  
+  -- Метадані
+  created_at        TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),
+  updated_at        TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
+);
+
+-- ─── ОНОВЛЕННЯ ТАБЛИЦІ BLOG (SEO поля) ─────────────────────────
+ALTER TABLE blog ADD COLUMN IF NOT EXISTS meta_title       TEXT;
+ALTER TABLE blog ADD COLUMN IF NOT EXISTS meta_description TEXT;
+ALTER TABLE blog ADD COLUMN IF NOT EXISTS tags             TEXT[] DEFAULT '{}';
+ALTER TABLE blog ADD COLUMN IF NOT EXISTS alt_text         TEXT; -- для головного зображення
+
+-- ─── ОНОВЛЕННЯ ТАБЛИЦІ REVIEWS (Модерація та Google Auth) ─────
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS is_published  BOOLEAN DEFAULT false;
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS google_id     TEXT;
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS google_email  TEXT;
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS avatar_url    TEXT;
+
+-- ─── ОНОВЛЕННЯ ТАБЛИЦІ GALLERY (alt_text для SEO) ──────────────
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS alt_text      TEXT;
+
+-- ─── RLS ДЛЯ НОВИХ ТАБЛИЦЬ ────────────────────────────────────
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "public_all_projects" ON projects FOR ALL USING (true) WITH CHECK (true);
+
+-- ─── ІНДЕКСИ ДЛЯ НОВИХ ТАБЛИЦЬ ────────────────────────────────
+CREATE INDEX IF NOT EXISTS projects_category_idx     ON projects(category);
+CREATE INDEX IF NOT EXISTS projects_published_idx  ON projects(is_published);
+CREATE INDEX IF NOT EXISTS projects_featured_idx   ON projects(is_featured);
+CREATE INDEX IF NOT EXISTS projects_slug_idx       ON projects(slug);
+CREATE INDEX IF NOT EXISTS blog_tags_idx           ON blog USING GIN(tags);
+CREATE INDEX IF NOT EXISTS reviews_google_id_idx   ON reviews(google_id);
+
+-- ─── ТРИГЕР ДЛЯ updated_at ────────────────────────────────────
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = timezone('utc', now());
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS update_projects_updated_at ON projects;
+CREATE TRIGGER update_projects_updated_at
+  BEFORE UPDATE ON projects
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ═══════════════════════════════════════════════════════════════
 -- ГОТОВО ✓
 -- ═══════════════════════════════════════════════════════════════
