@@ -3,16 +3,13 @@
 import { motion } from "framer-motion";
 import { MoveRight, MapPin, Phone, Check } from "lucide-react";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
+import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import Services from "@/components/Services";
-import Cases from "@/components/Cases";
 import About from "@/components/About";
 import Timeline from "@/components/Timeline";
-import Blog from "@/components/Blog";
-import Configurator from "@/components/Configurator";
 import FAQ from "@/components/FAQ";
-import Reviews from "@/components/Reviews";
 import Footer from "@/components/Footer";
 import WhyUs from "@/components/WhyUs";
 import Guarantees from "@/components/Guarantees";
@@ -22,6 +19,40 @@ import PromoBanner from "@/components/PromoBanner";
 import { ConfigProvider } from "@/context/ConfigContext";
 import { useSiteSettings } from "@/context/SiteContext";
 import { recordEvent } from "@/lib/analytics";
+
+// Lazy load heavy components for faster initial load
+const Cases = dynamic(() => import("@/components/Cases"), {
+  loading: () => <SectionSkeleton />,
+  ssr: false,
+});
+const Reviews = dynamic(() => import("@/components/Reviews"), {
+  loading: () => <SectionSkeleton />,
+  ssr: false,
+});
+const Blog = dynamic(() => import("@/components/Blog"), {
+  loading: () => <SectionSkeleton />,
+  ssr: false,
+});
+const Configurator = dynamic(() => import("@/components/Configurator"), {
+  loading: () => <SectionSkeleton />,
+  ssr: false,
+});
+
+// Loading skeleton for lazy-loaded sections
+function SectionSkeleton() {
+  return (
+    <div className="py-20 md:py-32 px-4">
+      <div className="container mx-auto">
+        <div className="h-8 w-48 bg-white/5 rounded animate-pulse mb-8 mx-auto" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-64 bg-white/5 rounded animate-pulse" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const settings = useSiteSettings();
@@ -52,6 +83,9 @@ export default function Home() {
             fill 
             className="object-cover object-center scale-105"
             priority
+            placeholder="blur"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzE0MTQxNCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzI1MjUyNSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+"
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-dark-bg)] via-[#000000aa] to-[#00000080]" />
         </div>

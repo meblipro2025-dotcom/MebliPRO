@@ -1,37 +1,20 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
-import { Float, MeshDistortMaterial, Sphere } from "@react-three/drei";
-
-if (typeof window !== "undefined") {
-  const _warn = console.warn.bind(console);
-  console.warn = (...args: Parameters<typeof console.warn>) => {
-    if (typeof args[0] === "string" && args[0].includes("THREE.Clock")) return;
-    _warn(...args);
-  };
-}
-
 export default function Hero3D() {
   return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-40 pointer-events-none z-0">
-      <div className="w-full h-full min-h-[50vh] md:min-h-full aspect-[4/5] md:aspect-auto">
-        <Canvas className="!h-full !w-full">
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
-        <Float speed={2} rotationIntensity={1} floatIntensity={1}>
-          <Sphere args={[1, 100, 200]} scale={2.4}>
-            <MeshDistortMaterial
-              color="#CC9900"
-              attach="material"
-              distort={0.4}
-              speed={2}
-              roughness={0}
-              metalness={1}
-            />
-          </Sphere>
-        </Float>
-        </Canvas>
-      </div>
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] opacity-30 pointer-events-none z-0">
+      {/* Animated gradient orb - 10x faster than Three.js */}
+      <div className="w-full h-full rounded-full bg-gradient-to-br from-[#D4AF37] via-[#8B6914] to-[#D4AF37] blur-3xl animate-pulse" />
+      <div 
+        className="absolute inset-4 rounded-full bg-gradient-to-tr from-[#D4AF37]/50 via-transparent to-[#D4AF37]/30 blur-2xl"
+        style={{ animation: 'spin 20s linear infinite' }}
+      />
+      <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
