@@ -58,7 +58,6 @@ export async function POST(req: Request) {
     }
 
     let pdfBuffer: Buffer | null = null;
-
     try {
       pdfBuffer = await generateLeadPDF({
         name: safeName,
@@ -84,7 +83,7 @@ export async function POST(req: Request) {
         pdfFilename,
       });
     } catch (error) {
-      console.error("Email send error (SMTP issue?):", error);
+      console.error("Email send error:", error);
     }
 
     const botToken = process.env.BOT_TOKEN;
@@ -92,31 +91,38 @@ export async function POST(req: Request) {
 
     if (botToken && chatId) {
       try {
-        // Professional formatting for TG
-        let tgHtml = `<b>🚀 НОВА ЗАЯВКА - MEBLI-PRO</b>\n`;
-        tgHtml += `───────────────────\n`;
+        let tgHtml = `<b>✨ НОВА ЗАЯВКА - MEBLI-PRO</b>\n`;
+        tgHtml += `━━━━━━━━━━━━━━━━━\n`;
         tgHtml += `👤 <b>Клієнт:</b> ${safeName}\n`;
-        tgHtml += `📞 <b>Телефон:</b> <a href="tel:${safePhone}">${safePhone}</a>\n`;
-        tgHtml += `📂 <b>Тип:</b> ${safeProjectType}\n`;
+        tgHtml += `📞 <b>Телефон:</b> <code>${safePhone}</code>\n`;
+        tgHtml += `📂 <b>Послуга:</b> ${safeProjectType}\n`;
+        
+        if (dimensions && dimensions !== 'Д:- Ш:- В:-') {
+            tgHtml += `📐 <b>Габарити:</b> ${dimensions}\n`;
+        }
         
         if (budget) tgHtml += `💰 <b>Бюджет:</b> ${budget}\n`;
-        if (dimensions) tgHtml += `📐 <b>Розміри:</b> ${dimensions}\n`;
         
         if (Object.keys(normalizedAnswers).length > 0) {
-          tgHtml += `\n<b>📋 ДЕТАЛІ КВІЗУ:</b>\n`;
+          tgHtml += `\n<b>📋 ОПИТУВАЛЬНИК:</b>\n`;
           for (const [key, value] of Object.entries(normalizedAnswers)) {
-            tgHtml += `• <i>${key}:</i> ${value}\n`;
+            tgHtml += `◾️ <i>${key}:</i> ${value}\n`;
           }
         }
 
         if (notes) {
-          tgHtml += `\n<b>📝 КОМЕНТАР:</b>\n${notes}\n`;
+          tgHtml += `\n<b>📝 КОМЕНТАР:</b>\n<i>${notes}</i>\n`;
         }
         
-        tgHtml += `───────────────────\n`;
-        tgHtml += `⏰ ${new Date().toLocaleString('uk-UA')}`;
+        if (filesUrls && filesUrls.length > 0) {
+            tgHtml += `\n<b>📎 ФАЙЛИ:</b> ${filesUrls.length} шт.\n`;
+        }
 
-        // Send Message
+        tgHtml += `━━━━━━━━━━━━━━━━━\n`;
+        tgHtml += `👉 <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin">Відкрити в Адмін-панелі</a>\n`;
+        tgHtml += `⏰ ${new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kiev' })}`;
+
+        // Main Message
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -124,30 +130,33 @@ export async function POST(req: Request) {
             chat_id: chatId,
             text: tgHtml,
             parse_mode: "HTML",
+            disable_web_page_preview: true,
             reply_markup: {
               inline_keyboard: [
                 [
                   { text: "📞 Зателефонувати", url: `tel:${safePhone}` },
-                  { text: "💬 WhatsApp", url: `https://wa.me/${safePhone.replace(/\D/g,'')}` }
+                  { text: "💬 Viber", url: `viber://add?number=${safePhone.replace(/\D/g,'')}` }
                 ],
                 [
-                  { text: "⚙️ В Адмінку", url: `${process.env.NEXT_PUBLIC_SITE_URL}/admin` }
+                  { text: "⚡️ WhatsApp", url: `https://wa.me/${safePhone.replace(/\D/g,'')}` },
+                  { text: "📱 Telegram", url: `https://t.me/${safePhone.replace(/\D/g,'')}` }
                 ]
               ],
             },
           }),
         });
 
-        // Send PDF if exists
+        // PDF Document
         if (pdfBuffer) {
           const pdfData = new FormData();
           pdfData.append("chat_id", chatId);
           pdfData.append("document", new Blob([new Uint8Array(pdfBuffer)], { type: "application/pdf" }), pdfFilename);
+          pdfData.append("caption", "📄 Детальний PDF-проєкт заявки");
           await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, { method: "POST", body: pdfData });
         }
 
-        // Send Contact
-        if (phone && /^\+?\d{10,15}$/.test(phone.replace(/\s+/g,''))) {
+        // Native Contact
+        if (phone && /^\+?\d{9,15}$/.test(phone.replace(/\s+/g,''))) {
           await fetch(`https://api.telegram.org/bot${botToken}/sendContact`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -159,31 +168,19 @@ export async function POST(req: Request) {
           });
         }
       } catch (error) {
-        console.error("TG error:", error);
+        console.error("TG catch error:", error);
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      leadId,
-      message: "Заявку отримано! Ми зв'яжемося з вами найближчим часом.",
-    });
+    return NextResponse.json({ success: true, leadId });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Lead API error:", error);
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    console.error("API error:", error);
+    return NextResponse.json({ success: false }, { status: 500 });
   }
 }
 
 export async function GET() {
-  const { data, error } = await supabase
-    .from("leads")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
+  const { data, error } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data);
 }
