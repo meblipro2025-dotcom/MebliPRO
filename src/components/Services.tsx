@@ -3,42 +3,99 @@
 import { motion } from "framer-motion";
 import { MoveRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useSiteSettings } from "@/context/SiteContext";
+
+interface Service {
+  id: string;
+  title: string;
+  desc: string;
+  bg: string;
+  slug: string;
+  category: string;
+}
 
 export default function Services() {
   const settings = useSiteSettings();
-  const services = settings.services.length > 0 ? settings.services : [
+  
+  const defaultServices: Service[] = [
     {
+      id: "1",
       title: "Кухонні Меблі",
-      desc: "Індивідуальні кухонні гарнітури, острови та високі шафи з системами зберігання.",
+      desc: "Індивідуальні кухонні гарнітури, острови та високі шафи з системами зберігання. Преміум фурнітура Blum та Hettich.",
       bg: "/images/kitchen_modern.png",
+      slug: "kukhni",
+      category: "kitchen",
     },
     {
+      id: "2",
       title: "Шафи та Гардеробні",
       desc: "Шафи-купе, гардеробні, пенали та платтяні кімнати з максимальним використанням простору.",
       bg: "/images/wardrobe_builtin.png",
+      slug: "shafi",
+      category: "wardrobe",
     },
     {
+      id: "3",
       title: "Ліжка-Трансформери",
-      desc: "Система 3-в-1: ліжко + шафа + диван. Ідеальне рішення для маленьких квартир.",
+      desc: "Система 3-в-1: ліжко + шафа + диван. Ідеальне рішення для маленьких квартир та студій.",
       bg: "/images/transformer1.jpg",
+      slug: "lizhka-transformery",
+      category: "bed",
     },
     {
+      id: "4",
       title: "Підвісні Столи",
-      desc: "Компактні столи-трансформери, що складаються в полицю. Економія простору на кухні.",
+      desc: "Компактні столи-трансформери, що складаються в полицю. Економія простору на кухні та в офісі.",
       bg: "/images/471500883.webp",
+      slug: "pidvisni-stoly",
+      category: "tables",
     },
     {
+      id: "5",
       title: "Дитячі Кімнати",
       desc: "Комплексні рішення під ключ: ліжка-горища, робочі зони, ігрові майданчики з безпечних матеріалів.",
       bg: "/images/children_room.png",
+      slug: "dityachi-kimnaty",
+      category: "children",
     },
     {
-      title: "Реставрація та Ремонт",
-      desc: "Відновлення фасадів, заміна фурнітури та сучасні ремонтні рішення.",
+      id: "6",
+      title: "Офісні Приміщення",
+      desc: "Офісні меблі преміум-класу: столи, шафи для документів, ресепшени, системи зберігання.",
       bg: "/images/office_desk.png",
+      slug: "ofisni-mebli",
+      category: "office",
+    },
+    {
+      id: "7",
+      title: "Вироби зі Скла",
+      desc: "Скляні полиці, дзеркала, душові кабіни, міжкімнатні перегородки. Індивідуальні розміри.",
+      bg: "/images/luxury_kitchen.png",
+      slug: "vyroby-zi-skla",
+      category: "glass",
+    },
+    {
+      id: "8",
+      title: "Стільниці",
+      desc: "Кухонні та офісні стільниці з кварцу, акрилу, масиву дерева. Будь-які розміри та форми.",
+      bg: "/images/kitchen_island.png",
+      slug: "stilnytsi",
+      category: "countertops",
+    },
+    {
+      id: "9",
+      title: "Розсувні Системи",
+      desc: "Розсувні двері купе, перегородки, фасадні системи. Преміум механізми з доводчиками.",
+      bg: "/images/closet_white.png",
+      slug: "rozsuvni-systemy",
+      category: "sliding",
     },
   ];
+  
+  const services = settings.services.length > 0 
+    ? settings.services.map((s: Service) => ({ ...s, slug: s.slug || s.title.toLowerCase().replace(/\s+/g, '-') }))
+    : defaultServices;
 
   return (
     <section id="services" className="relative py-10 md:py-24 lg:py-32 px-4 md:px-6 z-10">
@@ -100,9 +157,12 @@ export default function Services() {
                   <p className="text-sm font-light text-zinc-300 leading-relaxed mb-4 md:mb-6 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 line-clamp-2 md:line-clamp-none">
                     {service.desc}
                   </p>
-                  <button className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#D4AF37] opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200 cursor-pointer">
+                  <Link 
+                    href={`/services/${service.slug}`}
+                    className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#D4AF37] opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200 cursor-pointer"
+                  >
                     Детальніше <MoveRight className="w-4 h-4" />
-                  </button>
+                  </Link>
                 </div>
               </div>
               

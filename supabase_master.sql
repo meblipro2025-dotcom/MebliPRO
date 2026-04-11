@@ -318,6 +318,11 @@ ALTER TABLE gallery ADD COLUMN IF NOT EXISTS alt_text      TEXT;
 -- ─── RLS ДЛЯ НОВИХ ТАБЛИЦЬ ────────────────────────────────────
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "public_all_projects" ON projects;
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
 CREATE POLICY "public_all_projects" ON projects FOR ALL USING (true) WITH CHECK (true);
 
 -- ─── ІНДЕКСИ ДЛЯ НОВИХ ТАБЛИЦЬ ────────────────────────────────

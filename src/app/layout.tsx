@@ -136,46 +136,24 @@ export async function generateMetadata(): Promise<Metadata> {
       "кухні Blum Hettich Київ",
       "гардеробні системи Лівий берег",
       "меблі Воскресенка",
-      "меблі Лісовий масив",
-      "фарбований МДФ кухні",
-      "меблі без посередників Київ",
-      "виготовлення меблів Троєщина",
-      "приватний меблевий майстер Київ"
     ],
     openGraph: {
-      title: "MEBLI-PRO | Кухні та шафи на замовлення | Київ, Лівий берег",
-      description: "Професійне виготовлення меблів без посередників. Кухні, гардеробні, шафи-купе з фурнітурою Blum та Hettich. Працюємо на Троєщині, Лісовому, Дарниці.",
+      title: settings.logo_text,
+      description: settings.hero_subtitle,
       url: baseUrl,
-      siteName: "MEBLI-PRO",
       images: [
         {
           url: `${baseUrl}/images/luxury_kitchen.png`,
           width: 1200,
           height: 630,
-          alt: "Кухні преміум-класу на замовлення в Києві — MEBLI-PRO",
+          alt: `${settings.logo_text} — Кухні та меблі на замовлення в Києві, Троєщина, Дарниця`,
         },
       ],
-      locale: "uk_UA",
-      type: "website",
     },
     twitter: {
-      card: "summary_large_image",
-      title: "MEBLI-PRO | Кухні та шафи на замовлення | Київ",
-      description: "Професійне виготовлення меблів без посередників. Кухні, гардеробні, шафи-купе на Лівому березі Києва.",
+      title: settings.logo_text,
+      description: settings.hero_subtitle,
       images: [`${baseUrl}/images/luxury_kitchen.png`],
-    },
-    alternates: {
-      canonical: baseUrl,
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
     },
   };
 }
