@@ -606,9 +606,9 @@ export default function Projects() {
                       </div>
                       <button
                         onClick={() => openModal(project)}
-                        className="flex items-center gap-1 text-sm text-white bg-[#D4AF37]/20 hover:bg-[#D4AF37] hover:text-black px-4 py-2 rounded-lg transition-all duration-300"
+                        className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-[#D4AF37] border border-[#D4AF37] hover:bg-[#D4AF37] hover:text-black px-4 py-2 rounded-sm transition-all duration-300"
                       >
-                        Деталі <ArrowRight className="w-4 h-4" />
+                        Замовити прорахунок <ArrowRight className="w-4 h-4" />
                       </button>
                     </div>
                   </div>

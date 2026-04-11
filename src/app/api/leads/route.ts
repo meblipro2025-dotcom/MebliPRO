@@ -90,63 +90,69 @@ export async function POST(req: Request) {
     const botToken = process.env.BOT_TOKEN;
     const chatId = process.env.ADMIN_CHAT_ID;
 
-    if (botToken && chatId && chatId !== "YOUR_PERSONAL_CHAT_ID") {
+    if (botToken && chatId) {
       try {
-        let html =
-          `🚀 <b>НОВА ЗАЯВКА</b>\n\n` +
-          `📋 <b>${safeProjectType}</b>\n` +
-          `👤 ${safeName}\n` +
-          `📱 <a href="tel:${safePhone}">${safePhone}</a>\n` +
-          (budget ? `💰 Бюджет: <b>${budget}</b>\n` : "") +
-          (notes ? `📝 ${notes}\n` : "") +
-          (dimensions ? `📐 ${dimensions}\n` : "");
-
+        // Professional formatting for TG
+        let tgHtml = `<b>🚀 НОВА ЗАЯВКА - MEBLI-PRO</b>\n`;
+        tgHtml += `───────────────────\n`;
+        tgHtml += `👤 <b>Клієнт:</b> ${safeName}\n`;
+        tgHtml += `📞 <b>Телефон:</b> <a href="tel:${safePhone}">${safePhone}</a>\n`;
+        tgHtml += `📂 <b>Тип:</b> ${safeProjectType}\n`;
+        
+        if (budget) tgHtml += `💰 <b>Бюджет:</b> ${budget}\n`;
+        if (dimensions) tgHtml += `📐 <b>Розміри:</b> ${dimensions}\n`;
+        
         if (Object.keys(normalizedAnswers).length > 0) {
-          html += `\n── <b>Деталі</b> ──\n`;
+          tgHtml += `\n<b>📋 ДЕТАЛІ КВІЗУ:</b>\n`;
           for (const [key, value] of Object.entries(normalizedAnswers)) {
-            if (!['name', 'phone'].includes(key)) {
-              html += `• <i>${key}</i>: ${value}\n`;
-            }
+            tgHtml += `• <i>${key}:</i> ${value}\n`;
           }
         }
 
+        if (notes) {
+          tgHtml += `\n<b>📝 КОМЕНТАР:</b>\n${notes}\n`;
+        }
+        
+        tgHtml += `───────────────────\n`;
+        tgHtml += `⏰ ${new Date().toLocaleString('uk-UA')}`;
+
+        // Send Message
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            chat_id: Number(chatId),
-            text: html,
+            chat_id: chatId,
+            text: tgHtml,
             parse_mode: "HTML",
             reply_markup: {
-              inline_keyboard: [[
-                { text: "💬 Написати клієнту", url: "https://t.me/devcraft_ua" },
-              ]],
+              inline_keyboard: [
+                [
+                  { text: "📞 Зателефонувати", url: `tel:${safePhone}` },
+                  { text: "💬 WhatsApp", url: `https://wa.me/${safePhone.replace(/\D/g,'')}` }
+                ],
+                [
+                  { text: "⚙️ В Адмінку", url: `${process.env.NEXT_PUBLIC_SITE_URL}/admin` }
+                ]
+              ],
             },
           }),
         });
 
+        // Send PDF if exists
         if (pdfBuffer) {
-          const formData = new FormData();
-          formData.append("chat_id", chatId);
-          formData.append("caption", `📄 ${pdfFilename}`);
-          formData.append(
-            "document",
-            new Blob([new Uint8Array(pdfBuffer)], { type: "application/pdf" }),
-            pdfFilename,
-          );
-
-          await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
-            method: "POST",
-            body: formData,
-          });
+          const pdfData = new FormData();
+          pdfData.append("chat_id", chatId);
+          pdfData.append("document", new Blob([pdfBuffer], { type: "application/pdf" }), pdfFilename);
+          await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, { method: "POST", body: pdfData });
         }
 
-        if (phone) {
+        // Send Contact
+        if (phone && /^\+?\d{10,15}$/.test(phone.replace(/\s+/g,''))) {
           await fetch(`https://api.telegram.org/bot${botToken}/sendContact`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              chat_id: Number(chatId),
+              chat_id: chatId,
               phone_number: phone,
               first_name: safeName,
             }),
@@ -160,7 +166,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       leadId,
-      message: "Заявку отримано! Майстер зв'яжеться з вами протягом 1 години.",
+      message: "Заявку отримано! Ми зв'яжемося з вами найближчим часом.",
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

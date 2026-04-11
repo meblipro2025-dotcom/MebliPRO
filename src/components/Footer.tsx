@@ -50,14 +50,22 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Legal Links */}
+          {/* Areas of Service (SEO) */}
           <div className="space-y-6">
-            <h4 className="text-lg font-heading text-white uppercase tracking-widest text-[12px]">Юридична інформація</h4>
-            <ul className="space-y-4 text-zinc-400 font-light">
-              <li><Link href="/privacy-policy" className="hover:text-white transition-colors">Політика конфіденційності</Link></li>
-              <li><Link href="/terms" className="hover:text-white transition-colors">Умови використання</Link></li>
-              <li><Link href="/cookie-policy" className="hover:text-white transition-colors">Політика файлів cookie</Link></li>
-            </ul>
+            <h4 className="text-lg font-heading text-white uppercase tracking-widest text-[12px]">Райони обслуговування</h4>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] text-zinc-500 font-light uppercase tracking-tighter">
+              <span>Биківня</span>
+              <span>Лісовий</span>
+              <span>Чернігівська</span>
+              <span>Дарниця</span>
+              <span>Лівобережна</span>
+              <span>Позняки</span>
+              <span>Харківська</span>
+              <span>Осокорки</span>
+              <span>Троєщина</span>
+              <span>Деснянський</span>
+              <span>Дніпровський</span>
+            </div>
           </div>
 
           {/* Contact Info */}

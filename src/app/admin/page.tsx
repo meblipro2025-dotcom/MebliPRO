@@ -11,6 +11,7 @@ import {
 import { useAutosave } from "@/hooks/useAutosave";
 import { defaultBanner, defaultGalleryItems, defaultBlogPosts } from "@/lib/siteDefaults";
 import { AdminInput, FileUpload, SectionCard } from "./_components/AdminInput";
+import { ProjectsAdmin } from "./_components/ProjectsAdmin";
 
 type Tab = "leads" | "banner" | "content" | "analytics" | "reviews" | "gallery" | "settings" | "blog";
 
@@ -54,7 +55,7 @@ export default function AdminDashboard() {
   const [banner, setBanner] = useState(defaultBanner);
   const [reviews, setReviews] = useState<any[]>([]);
   const [editReview, setEditReview] = useState<any>(null);
-  const [gallery, setGallery] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [editProject, setEditProject] = useState<any>(null);
   const [blogs, setBlogs] = useState<any[]>([]);
   const [editBlog, setEditBlog] = useState<any>(null);
@@ -109,7 +110,7 @@ export default function AdminDashboard() {
       const [leadsRes, reviewsRes, galleryRes, blogsRes, eventsRes, settingsRes] = await Promise.all([
         supabase.from('leads').select('*').order('created_at', { ascending: false }),
         supabase.from('reviews').select('*').order('created_at', { ascending: false }),
-        supabase.from('gallery').select('*').order('created_at', { ascending: false }),
+        supabase.from('projects').select('*').order('created_at', { ascending: false }),
         supabase.from('blog').select('*').order('created_at', { ascending: false }),
         supabase.from('site_events').select('*').order('created_at', { ascending: false }).limit(200),
         fetch('/api/admin/settings?_t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => ({})),
@@ -117,7 +118,7 @@ export default function AdminDashboard() {
       
       if (leadsRes?.data) setLeads(leadsRes.data);
       if (reviewsRes?.data) setReviews(reviewsRes.data);
-      if (galleryRes?.data) setGallery(galleryRes.data);
+      if (galleryRes?.data) setProjects(galleryRes.data);
       if (blogsRes?.data) setBlogs(blogsRes.data);
 
       if (settingsRes?.banner) setBanner(settingsRes.banner);
@@ -364,7 +365,7 @@ export default function AdminDashboard() {
             { id: "banner", label: "Банер", icon: Megaphone },
             { id: "content", label: "Контент", icon: Layers },
             { id: "blog", label: "Блог", icon: FileText },
-            { id: "gallery", label: "Галерея", icon: ImageIcon },
+            { id: "gallery", label: "Проєкти", icon: ImageIcon },
             { id: "reviews", label: "Відгуки", icon: Star },
             { id: "analytics", label: "Аналітика", icon: LayoutDashboard },
             { id: "settings", label: "Налаштування", icon: Settings },
@@ -558,6 +559,12 @@ export default function AdminDashboard() {
                         <div className="w-[150px] mt-6"><FileUpload label="Огляд..." onUpload={(e) => uploadImage(e, (url) => setEditBlog({...editBlog, image_url: url}))} /></div>
                       </div>
 
+                      <SectionCard title="SEO та Теги">
+                        <AdminInput label="Теги (через кому)" value={(editBlog.tags || []).join(', ')} onChange={(v) => setEditBlog({...editBlog, tags: v.split(',').map((s:string) => s.trim())})} />
+                        <AdminInput label="Meta Title" value={editBlog.meta_title || ''} onChange={(v) => setEditBlog({...editBlog, meta_title: v})} />
+                        <AdminInput label="Meta Description" rows={2} value={editBlog.meta_description || ''} onChange={(v) => setEditBlog({...editBlog, meta_description: v})} />
+                      </SectionCard>
+
                       <div className="flex gap-3 pt-4 border-t border-white/10">
                         <button onClick={async () => {
                           const payload = {...editBlog, slug: editBlog.slug || generateSlug(editBlog.title)};
@@ -589,53 +596,7 @@ export default function AdminDashboard() {
 
               {/* GALLERY TAB */}
               {!loading && tab === "gallery" && (
-                <div className="space-y-8 animate-in fade-in">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-heading text-white">Галерея</h2>
-                    <button onClick={() => setEditProject({ title: '', materials: '', category: '', image_urls: [''] })} className="flex items-center gap-2 px-4 py-2 bg-[#D4AF37] text-black text-xs font-bold uppercase rounded-sm cursor-pointer"><Plus className="w-4 h-4" /> Додати роботу</button>
-                  </div>
-
-                  {editProject ? (
-                    <div className="border border-[#D4AF37]/50 rounded-sm p-6 bg-[#D4AF37]/5 space-y-6 animate-in slide-in-from-top-4">
-                      <h3 className="text-lg font-heading text-[#D4AF37]">{editProject.id ? 'Редагувати' : 'Нова робота'}</h3>
-                      <AdminInput label="Назва проекту" value={editProject.title} onChange={(v) => setEditProject({...editProject, title: v})} onFocus={() => handleFocus('gallery_project')} onBlur={handleBlur} />
-                      <AdminInput label="Матеріали / Опис" rows={3} value={editProject.materials} onChange={(v) => setEditProject({...editProject, materials: v})} onFocus={() => handleFocus('gallery_project')} onBlur={handleBlur} />
-                      <AdminInput label="Категорія (необов'язково)" value={editProject.category || ''} onChange={(v) => setEditProject({...editProject, category: v})} />
-                      
-                      <div className="flex gap-4">
-                        <div className="flex-1"><AdminInput label="Зображення (URL)" value={(editProject.image_urls||[]).join(', ')} onChange={(v) => setEditProject({...editProject, image_urls: v.split(',').map((s:string) => s.trim())})} onFocus={() => handleFocus('gallery_project')} onBlur={handleBlur} /></div>
-                        <div className="w-[150px] mt-6"><FileUpload label="Огляд..." onUpload={(e) => uploadImage(e, (url) => setEditProject((prev:any) => ({...prev, image_urls: [url]})))} /></div>
-                      </div>
-                      {editProject.image_urls?.[0] && <div className="mt-2"><img src={editProject.image_urls[0]} alt="Preview" className="w-32 h-32 object-cover border border-white/10 rounded-sm" /></div>}
-
-                      <div className="flex gap-3 pt-4 border-t border-white/10">
-                        <button onClick={async () => {
-                          const payload: any = { title: editProject.title, materials: editProject.materials, image_urls: editProject.image_urls || [] };
-                          if (editProject.category) payload.category = editProject.category;
-                          const { error } = editProject.id ? await supabase.from('gallery').update(payload).eq('id', editProject.id) : await supabase.from('gallery').insert(payload);
-                          if(error) showToast(error.message, 'error'); else { setEditProject(null); loadAll(); showToast('Збережено!'); }
-                        }} className="px-6 py-2 bg-[#D4AF37] text-black text-xs font-bold uppercase rounded-sm">Зберегти</button>
-                        <button onClick={() => setEditProject(null)} className="px-6 py-2 border border-white/20 text-xs text-white rounded-sm">Скасувати</button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {gallery.map(p => (
-                        <div key={p.id} className="p-4 border border-white/10 flex gap-4 bg-white/5 rounded-sm items-center hover:border-white/20 transition-colors">
-                          <ImageIcon className="w-10 h-10 text-zinc-600 shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-white font-bold text-sm truncate">{p.title}</h4>
-                            <p className="text-xs text-zinc-500 mt-1 truncate">{p.materials}</p>
-                          </div>
-                          <div className="flex gap-2 shrink-0">
-                             <button onClick={() => setEditProject(p)} className="p-2 text-zinc-400 hover:text-[#D4AF37] hover:bg-white/5 rounded-md"><Edit3 className="w-4 h-4"/></button>
-                             <button onClick={async () => { if(confirm("Видалити?")) { const { error } = await supabase.from('gallery').delete().eq('id', p.id); if (error) { showToast(error.message, 'error'); } else { loadAll(); showToast('Роботу видалено'); } } }} className="p-2 text-zinc-400 hover:text-red-400 hover:bg-white/5 rounded-md"><Trash2 className="w-4 h-4"/></button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <ProjectsAdmin showToast={showToast} />
               )}
 
               {/* REVIEWS TAB */}
