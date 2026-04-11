@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://mebli-pro.com.ua/sitemap.xml
+Sitemap: https://www.meblipro.pp.ua/sitemap.xml

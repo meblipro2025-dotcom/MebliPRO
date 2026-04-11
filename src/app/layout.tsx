@@ -119,7 +119,7 @@ async function getSiteSettings(): Promise<SiteSettings> {
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mebli-pro.com.ua";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.meblipro.pp.ua";
 
   return {
     title: "MEBLI-PRO | Кухні та шафи на замовлення | Київ, Лівий берег",

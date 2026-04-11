@@ -184,7 +184,7 @@ export async function generateLeadPDF(data: LeadData): Promise<Buffer> {
       </div>
 
       <div class="footer">
-        +380 93 143 18 43 &nbsp;|&nbsp; @devcraft_ua &nbsp;|&nbsp; mebli-pro.com.ua
+        +380 93 143 18 43 &nbsp;|&nbsp; @devcraft_ua &nbsp;|&nbsp; www.meblipro.pp.ua
       </div>
     </body>
     </html>
