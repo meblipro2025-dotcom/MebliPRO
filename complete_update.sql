@@ -39,8 +39,9 @@ ALTER TABLE reviews ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 -- Опублікувати всі існуючі відгуки
 UPDATE reviews SET is_published = true WHERE is_published IS NULL;
 
--- 5. Оновлення gallery (alt_text)
+-- 5. Оновлення gallery (alt_text + description)
 ALTER TABLE gallery ADD COLUMN IF NOT EXISTS alt_text TEXT;
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS description TEXT;
 
 -- 6. Оновлення site_events (path)
 ALTER TABLE site_events ADD COLUMN IF NOT EXISTS path TEXT;
