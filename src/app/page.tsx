@@ -13,6 +13,7 @@ import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import WhyUs from "@/components/WhyUs";
 import Guarantees from "@/components/Guarantees";
+import Process from "@/components/Process";
 import Hero3D from "@/components/Hero3D";
 import MobileContactBar from "@/components/MobileContactBar";
 import PromoBanner from "@/components/PromoBanner";
@@ -21,7 +22,7 @@ import { useSiteSettings } from "@/context/SiteContext";
 import { recordEvent } from "@/lib/analytics";
 
 // Lazy load heavy components for faster initial load
-const Cases = dynamic(() => import("@/components/Cases"), {
+const Projects = dynamic(() => import("@/components/Projects"), {
   loading: () => <SectionSkeleton />,
   ssr: false,
 });
@@ -189,7 +190,8 @@ export default function Home() {
       <div className="relative z-20 bg-[var(--color-dark-bg)]">
         <WhyUs />
         <Services />
-        <Cases />
+        <Projects />
+        <Process />
         <About />
         <Timeline />
         <Guarantees />
