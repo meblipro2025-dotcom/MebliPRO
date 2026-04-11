@@ -34,7 +34,7 @@ const Blog = dynamic(() => import("@/components/Blog"), {
   loading: () => <SectionSkeleton />,
   ssr: false,
 });
-const Configurator = dynamic(() => import("@/components/Configurator"), {
+const QuizCalculator = dynamic(() => import("@/components/QuizCalculator"), {
   loading: () => <SectionSkeleton />,
   ssr: false,
 });
@@ -205,7 +205,7 @@ export default function Home() {
         <Guarantees />
         <FAQ />
         <Reviews />
-        <Configurator />
+        <QuizCalculator />
         <Blog />
         <Footer />
       </div>
