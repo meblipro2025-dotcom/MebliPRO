@@ -3,7 +3,6 @@ import { supabase } from "@/lib/supabase";
 
 interface AnalyticsEvent {
   event_type: string;
-  path?: string;
   referrer?: string;
   source?: string;
 }
@@ -11,11 +10,11 @@ interface AnalyticsEvent {
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as AnalyticsEvent;
-    const { event_type, path, referrer, source } = body;
+    const { event_type, referrer, source } = body;
 
     const { error } = await supabase
       .from("site_events")
-      .insert([{ event_type, path, referrer, source }]);
+      .insert([{ event_type, referrer, source }]);
 
     if (error) {
       console.error("Analytics insert error:", error.message);
