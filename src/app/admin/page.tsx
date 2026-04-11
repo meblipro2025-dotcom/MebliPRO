@@ -99,6 +99,7 @@ export default function AdminDashboard() {
   const [analyticsRange, setAnalyticsRange] = useState<'today'|'week'|'month'|'all'>('week');
   const [autosaveEnabled, setAutosaveEnabled] = useState(false);
   const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Load Data
@@ -165,14 +166,32 @@ export default function AdminDashboard() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      
+      // Check if response is OK before parsing JSON
+      if (!res.ok) {
+        const errorText = await res.text();
+        let errorMessage = `HTTP ${res.status}: `;
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage += errorData.error || errorText;
+        } catch {
+          errorMessage += errorText || res.statusText;
+        }
+        throw new Error(errorMessage);
+      }
+      
       const data = await res.json();
-      if (!res.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.error || 'Помилка збереження налаштувань');
       }
       setDirty(false);
       setAutosaveStatus('saved');
+      setSaveError(null);
     } catch (err: unknown) {
       setAutosaveStatus('error');
+      const errorMsg = err instanceof Error ? err.message : 'Невідома помилка';
+      setSaveError(errorMsg);
+      console.error('[Admin] Save error:', err);
       throw err;
     }
   }, []);
@@ -324,7 +343,9 @@ export default function AdminDashboard() {
             Статус: 
             {autosaveStatus === 'saving' && <span className="text-blue-400">Зберігаємо...</span>}
             {autosaveStatus === 'saved' && <span className="text-green-400">✓ Збережено</span>}
-            {autosaveStatus === 'error' && <span className="text-red-400">✗ Помилка</span>}
+            {autosaveStatus === 'error' && (
+              <span className="text-red-400" title={saveError || ''}>✗ Помилка збереження</span>
+            )}
             {autosaveStatus === 'idle' && (dirty ? <span className="text-yellow-400">Є незбережені зміни</span> : <span>Готово</span>)}
           </div>
           <button onClick={saveAll} className={`hidden md:flex items-center gap-2 px-6 h-9 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${dirty ? 'bg-[#D4AF37] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
