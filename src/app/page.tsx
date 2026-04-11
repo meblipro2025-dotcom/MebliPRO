@@ -106,12 +106,13 @@ export default function Home() {
             >
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4AF37]" />
-                <span className="text-xs uppercase tracking-[0.3em] text-[#D4AF37] font-medium">Власне виробництво • Київ • 15+ років</span>
+                <span className="text-xs uppercase tracking-[0.3em] text-[#D4AF37] font-medium">Власне виробництво • Київ (Лівий берег) • 15+ років</span>
               </div>
               
               <div className="bg-black/50 sm:bg-transparent p-4 sm:p-0 -mx-4 sm:mx-0 rounded-lg sm:rounded-none backdrop-blur-sm sm:backdrop-blur-none">
                 <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-heading mb-4 sm:mb-6 leading-[1.15] sm:leading-[1.1] drop-shadow-lg text-white">
-                  Кухні та меблі на замовлення в Києві під ключ
+                  Кухні та меблі на замовлення в Києві
+                  <span className="block text-xl sm:text-3xl md:text-4xl lg:text-5xl mt-2 text-[#D4AF37]">Троєщина • Дарниця • Позняки • Лісовий</span>
                 </h1>
                 
                 {/* USP Points */}
@@ -129,7 +130,14 @@ export default function Home() {
                 </div>
                 
                 <p className="text-base sm:text-lg text-zinc-100 max-w-2xl mb-6 sm:mb-8 font-light leading-relaxed border-l-2 border-[#D4AF37]/50 pl-4 sm:pl-6 drop-shadow-md">
-                  Отримайте розрахунок вартості за 5 хвилин. Працюємо на Троєщині, Лісовому, Дарниці, Воскресенці, Биківні.
+                  Отримайте розрахунок вартості за 5 хвилин. Працюємо на Лівому березі: 
+                  <strong className="text-[#D4AF37]">Троєщина</strong>, 
+                  <strong className="text-[#D4AF37]">Лісовий</strong>, 
+                  <strong className="text-[#D4AF37]">Дарниця</strong>, 
+                  <strong className="text-[#D4AF37]">Биківня</strong>, 
+                  <strong className="text-[#D4AF37]">Позняки</strong>, 
+                  <strong className="text-[#D4AF37]">Осокорки</strong>, 
+                  <strong className="text-[#D4AF37]">Харківська</strong> та інші райони Києва.
                 </p>
               </div>
 
@@ -150,7 +158,7 @@ export default function Home() {
                   </a>
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-[#D4AF37]" />
-                    <span>Київ, Лівий берег</span>
+                    <span>м. Чернігівська, Лівобережна</span>
                   </div>
                 </div>
               </div>
