@@ -219,8 +219,14 @@ CREATE INDEX IF NOT EXISTS reviews_approved_idx ON reviews(is_approved);
 
 -- ─── STORAGE ─────────────────────────────────────────────────
 
+-- Site media bucket (for gallery, blog images)
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('site-media', 'site-media', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Quiz uploads bucket (for calculator file uploads)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('quiz-uploads', 'quiz-uploads', true)
 ON CONFLICT (id) DO NOTHING;
 
 DO $$ BEGIN
@@ -238,6 +244,20 @@ CREATE POLICY "public_upload_site_media"
 
 CREATE POLICY "public_delete_site_media"
   ON storage.objects FOR DELETE USING (bucket_id = 'site-media');
+
+-- ─── RLS ДЛЯ QUIZ-UPLOADS БАКЕТУ ──────────────────────────────
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "public_read_quiz_uploads"   ON storage.objects;
+  DROP POLICY IF EXISTS "public_upload_quiz_uploads" ON storage.objects;
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
+CREATE POLICY "public_read_quiz_uploads"
+  ON storage.objects FOR SELECT USING (bucket_id = 'quiz-uploads');
+
+CREATE POLICY "public_upload_quiz_uploads"
+  ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'quiz-uploads');
 
 -- ═══════════════════════════════════════════════════════════════
 -- НОВІ ТАБЛИЦІ ТА ОНОВЛЕННЯ (Масштабне оновлення 2025)
