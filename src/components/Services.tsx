@@ -157,9 +157,10 @@ export default function Services() {
                   <p className="text-sm font-light text-zinc-300 leading-relaxed mb-4 md:mb-6 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 line-clamp-2 md:line-clamp-none">
                     {service.desc}
                   </p>
-                  <Link 
+                  <Link
                     href={`/services/${service.slug}`}
-                    className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#D4AF37] opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200 cursor-pointer"
+                    onClick={(e) => console.log('Navigating to:', `/services/${service.slug}`)}
+                    className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#D4AF37] opacity-100 transition-all duration-500 cursor-pointer hover:scale-105 z-20 relative"
                   >
                     Детальніше <MoveRight className="w-4 h-4" />
                   </Link>
