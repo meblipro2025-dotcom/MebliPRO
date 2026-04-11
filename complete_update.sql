@@ -305,7 +305,7 @@ ARRAY['/images/children_room.png'],
 ON CONFLICT DO NOTHING;
 
 -- 6.3. Seed для REVIEWS (з модерацією)
-INSERT INTO reviews (name, rating, text, avatar_url, is_published) VALUES
+INSERT INTO reviews (author_name, rating, text_content, avatar_url, is_published) VALUES
 ('Олена К.', 5, 'Кухня просто чудова! Замірник приїхав швидко, все професійно. Виготовлення зайняло 25 днів як і обіцяли. Фурнітура Blum — це космос!', '/images/avatars/olena.jpg', true),
 
 ('Михайло Р.', 5, 'Замовляв шафу-купе в нішу. Все ідеально підійшло, дзеркала якісні. Монтажники приїхали вчасно, прибрали після себе. Рекомендую!', '/images/avatars/mykhailo.jpg', true),
