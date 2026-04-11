@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { LayoutGrid, Home, Layout, Brush, Sofa, Monitor, Box, ZoomIn, ArrowLeft } from "lucide-react";
 import Image from "next/image";
@@ -25,6 +26,11 @@ const categories = [
   { id: "hallway", name: "Передпокій", icon: Box },
   { id: "children", name: "Дитячі меблі", icon: Home },
   { id: "restoration", name: "Реставрація", icon: Brush },
+  { id: "bed", name: "Ліжка-трансформери", icon: Sofa },
+  { id: "office", name: "Офісні меблі", icon: Monitor },
+  { id: "glass", name: "Вироби зі скла", icon: Box },
+  { id: "countertops", name: "Стільниці", icon: Layout },
+  { id: "sliding", name: "Розсувні системи", icon: LayoutGrid },
 ];
 
 const allProjects: GalleryProject[] = [
@@ -65,8 +71,11 @@ const allProjects: GalleryProject[] = [
   { id: "35", title: "Стелаж для книг", category: "living", materials: "Метал, дерево, скло", description: "Відкритий стелаж для книг та декору.", image: "/images/tv_unit.png" },
 ];
 
-export default function PortfolioPage() {
-  const [activeTab, setActiveTab] = useState("all");
+function PortfolioContent() {
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get('category');
+  
+  const [activeTab, setActiveTab] = useState(categoryFromUrl || "all");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [projects, setProjects] = useState<GalleryProject[]>([]);
 
@@ -90,6 +99,13 @@ export default function PortfolioPage() {
     }
     loadProjects();
   }, []);
+  
+  // Update active tab when URL changes
+  useEffect(() => {
+    if (categoryFromUrl && categories.some(c => c.id === categoryFromUrl)) {
+      setActiveTab(categoryFromUrl);
+    }
+  }, [categoryFromUrl]);
 
   const filteredProjects = activeTab === "all" 
     ? projects 
@@ -226,5 +242,14 @@ export default function PortfolioPage() {
         )}
       </AnimatePresence>
     </main>
+  );
+}
+
+// Export with Suspense for useSearchParams
+export default function PortfolioPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center"><p className="text-zinc-400">Завантаження...</p></div>}>
+      <PortfolioContent />
+    </Suspense>
   );
 }
